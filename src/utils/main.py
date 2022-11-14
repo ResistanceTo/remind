@@ -66,6 +66,9 @@ class WechatMiddleHandler(MiddleHandler):
         if Content := re.search(r"<Content><\!\[CDATA\[(.*?)\]]\></Content>", body):
             self.wechat["Content"] = Content.groups()[0]
 
+    def finish(self):
+        super(MiddleHandler, self).finish()
+
 
 async def request(
     url, method="GET", params=None, headers=None, data=None, timeout=REQUEST_TIMEOUT, format="json"
