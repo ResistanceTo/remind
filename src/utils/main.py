@@ -55,7 +55,10 @@ class WechatMiddleHandler(MiddleHandler):
         super().prepare()
         body = self.request.body.decode("utf-8")
         if FromUserName := re.search(r"<FromUserName><!\[CDATA\[(.*?)\]\]></FromUserName>", body):
-            self.wechat["FromUserName"] = FromUserName.groups()[0]
+            if fromUserName := FromUserName.groups()[0]:
+                self.wechat["FromUserName"] = fromUserName
+            else:
+                raise ValueError("没有用户id")
         if Event := re.search(r"<Event><\!\[CDATA\[(.*?)\]]\></Event>", body):
             self.wechat["Event"] = Event.groups()[0]
         if EventKey := re.search(r"<EventKey><\!\[CDATA\[(.*?)\]]\></EventKey>", body):
@@ -65,13 +68,14 @@ class WechatMiddleHandler(MiddleHandler):
 
 
 async def request(
-    url, method="GET", headers=None, data=None, timeout=REQUEST_TIMEOUT, format="json"
+    url, method="GET", params=None, headers=None, data=None, timeout=REQUEST_TIMEOUT, format="json"
 ):
     """公共异步请求方法
 
     Args:
         url (str): url
         method (str, optional): 请求方式. Defaults to "GET".
+        params (dict, optional): Defaults to None.
         headers (dict, optional): Defaults to None.
         data (str, optional): Defaults to None.
         timeout (int, optional): Defaults to REQUEST_TIMEOUT.
@@ -79,6 +83,11 @@ async def request(
     """
     if isinstance(data, dict):
         data = json.dumps(data, ensure_ascii=False)
+    if params:
+        url += "?"
+        for key, value in params.items():
+            url += key + "=" + value + "&"
+    url = url[:-1]
     httpRequest = httpclient.HTTPRequest(
         url=url, method=method, headers=headers, body=data, request_timeout=timeout
     )

@@ -34,3 +34,32 @@ URL_ACCESS_TOKEN = f"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_c
 URL_WECHAT_MESSAGE = (
     "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}"
 )
+# 白名单
+WHITELIST = []
+
+# template
+# 模板
+MAIN_TEMPLATE = {
+    "touser": "",
+    "template_id": "",
+    "url": "",
+    "data": None,
+}
+
+# 模板id
+TEMPLATE_IDS = {
+    "weather_today": "xxxxxxxx"
+}
+
+
+################   和风天气配置   ################
+HEFENG_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+# 订阅用户使用api, 否则使用devapi
+HEFENG_HOST = "devapi"
+# 默认地点
+HEFENG_DEFAULT_LOCATION = "101010100"  # 北京
+# 三天天气
+HEFENG_URL_3D = f"https://{HEFENG_HOST}.qweather.com/v7/weather/3d"
+# 七天天气
+HEFENG_URL_7D = f"https://{HEFENG_HOST}.qweather.com/v7/weather/7d"
+

@@ -1,6 +1,7 @@
 import json
+from copy import deepcopy
 from .cache import cache
-from settings import logging, URL_ACCESS_TOKEN, URL_WECHAT_MESSAGE
+from settings import logging, URL_ACCESS_TOKEN, URL_WECHAT_MESSAGE, MAIN_TEMPLATE
 from .main import request
 
 
@@ -43,3 +44,23 @@ async def create_menu():
         format="text",
     )
     logging.info(resp)
+
+
+def dispose_template_msg(touser, template_id, data, url=""):
+    """构建模板消息
+
+    Args:
+        touser (str): 要发送给的人
+        template_id (str): 模板id
+        data (dict): 消息体数据
+        url (str, optional): 可跳转到的链接. Defaults to "".
+    """
+    msg_data = {}
+    for key, value in data.items():
+        msg_data[key] = {"value": value, "color": "#173177"}
+    template = deepcopy(MAIN_TEMPLATE)
+    template["touser"] = touser
+    template["template_id"] = template_id
+    template["url"] = url
+    template["data"] = msg_data
+    return msg_data
