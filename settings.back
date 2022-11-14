@@ -1,0 +1,36 @@
+import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s \"%(pathname)s\", line %(lineno)d, %(levelname)s %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+# 后台服务监听端口
+LISTEN_PORT = 8081
+LISTEN_HOST = "0.0.0.0"
+
+# 数据库配置
+DB_HOST = "127.0.0.1"
+DB_PORT = 3306
+DB_DATABASE = "remind"
+DB_USER = "root"
+DB_PASSWORD = "123456"
+
+# 请求超时时间 单位: 秒
+REQUEST_TIMEOUT = 5
+# 请求重试次数
+REQUEST_RETRY_COUNT = 3
+# 请求出错后隔多久再次请求 单位: 秒
+REQUEST_RETRY_TIMESLEEP = 1
+
+################   微信公众号配置   ################
+APPID = "xxxxxxxxxxxxxxxxxx"
+APPSECRET = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# 获取access_token
+URL_ACCESS_TOKEN = f"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={APPID}&secret={APPSECRET}"
+# 发送模板消息
+URL_WECHAT_MESSAGE = (
+    "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}"
+)

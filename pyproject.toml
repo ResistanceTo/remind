@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "remind"
+version = "0.1.0"
+description = "微信公众号提醒"
+authors = ["ResistanceTo <48614752+ResistanceTo@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+tornado = "^6.2"
+
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple/"
+default = true
+secondary = false
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
