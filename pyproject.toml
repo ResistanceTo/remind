@@ -8,6 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.8"
 tornado = "^6.2"
+apscheduler = "^3.9.1.post1"
 
 
 [[tool.poetry.source]]

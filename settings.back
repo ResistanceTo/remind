@@ -24,6 +24,10 @@ REQUEST_RETRY_COUNT = 3
 # 请求出错后隔多久再次请求 单位: 秒
 REQUEST_RETRY_TIMESLEEP = 1
 
+# 每日定时推送天气
+SCHED_HOUR = 6
+SCHED_MINUTE = 30
+
 ################   微信公众号配置   ################
 APPID = "xxxxxxxxxxxxxxxxxx"
 APPSECRET = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

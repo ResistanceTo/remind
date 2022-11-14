@@ -87,7 +87,7 @@ async def request(
         url += "?"
         for key, value in params.items():
             url += key + "=" + value + "&"
-    url = url[:-1]
+        url = url[:-1]
     httpRequest = httpclient.HTTPRequest(
         url=url, method=method, headers=headers, body=data, request_timeout=timeout
     )

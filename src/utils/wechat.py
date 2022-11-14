@@ -1,8 +1,15 @@
 import json
 from copy import deepcopy
 from .cache import cache
-from settings import logging, URL_ACCESS_TOKEN, URL_WECHAT_MESSAGE, MAIN_TEMPLATE
+from settings import (
+    logging,
+    URL_ACCESS_TOKEN,
+    URL_WECHAT_MESSAGE,
+    MAIN_TEMPLATE,
+    TEMPLATE_IDS,
+)
 from .main import request
+from .hefeng import get_today_weather
 
 
 async def get_access_token():
@@ -24,6 +31,22 @@ async def push_message(data: dict):
             logging.info("微信消息发送成功")
         else:
             logging.error(f"模板消息发送失败, 错误信息:{resp['errmsg']}")  # type: ignore
+
+
+async def weather_today(touser):
+    """发送今日天气
+
+    Args:
+        touser (str): 接收人id
+    """
+    weather = await get_today_weather()
+    if weather:
+        url = weather["fxLink"]
+        del weather["fxLink"]
+        template_msg_data = dispose_template_msg(
+            touser, TEMPLATE_IDS["weather_today"], weather, url
+        )
+        await push_message(template_msg_data)
 
 
 async def create_menu():
@@ -63,4 +86,4 @@ def dispose_template_msg(touser, template_id, data, url=""):
     template["template_id"] = template_id
     template["url"] = url
     template["data"] = msg_data
-    return msg_data
+    return template
