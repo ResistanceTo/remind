@@ -21,7 +21,16 @@ async def get_access_token():
     return token
 
 
-async def push_message(data: dict):
+async def push_message(data: dict, users: list = []):
+    if users != []:
+        for user in users:
+            data["touser"] = user
+            await push_template_message(data)
+    else:
+        await push_template_message(data)
+
+
+async def push_template_message(data):
     token = await get_access_token()
     resp = await request(URL_WECHAT_MESSAGE.format(token), "POST", data=data)
     if resp == None:
