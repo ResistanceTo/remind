@@ -7,6 +7,7 @@ from settings import (
     URL_WECHAT_MESSAGE,
     MAIN_TEMPLATE,
     TEMPLATE_IDS,
+    REQUEST_RETRY_COUNT,
 )
 from .main import request
 from .hefeng import get_today_weather
@@ -30,7 +31,9 @@ async def push_message(data: dict, users: list = []):
         await push_template_message(data)
 
 
-async def push_template_message(data):
+async def push_template_message(data, num=0):
+    if num >= REQUEST_RETRY_COUNT:
+        return
     token = await get_access_token()
     resp = await request(URL_WECHAT_MESSAGE.format(token), "POST", data=data)
     if resp == None:
@@ -39,7 +42,9 @@ async def push_template_message(data):
         if resp["errcode"] == 0:  # type: ignore
             logging.info("微信消息发送成功")
         else:
+            logging.debug(f"url:{URL_WECHAT_MESSAGE.format(token)}, data:{data}")
             logging.error(f"模板消息发送失败, 错误信息:{resp['errmsg']}")  # type: ignore
+            return await push_template_message(data, num + 1)
 
 
 async def weather_today(touser):
