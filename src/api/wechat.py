@@ -10,5 +10,5 @@ class WechatApiHandler(WechatMiddleHandler):
     async def post(self):
         if self.wechat.get("EventKey") == "weather_today":
             tornado.ioloop.IOLoop.instance().add_callback(
-                weather_today, self.wechat.get("FromUserName")
+                weather_today, [self.wechat.get("FromUserName")]
             )

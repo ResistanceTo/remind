@@ -47,20 +47,21 @@ async def push_template_message(data, num=0):
             return await push_template_message(data, num + 1)
 
 
-async def weather_today(touser):
-    """发送今日天气
+async def weather_today(touser_list):
+    """多人发送今日天气
 
     Args:
-        touser (str): 接收人id
+        touser_list (list): 接收人id列表
     """
     weather = await get_today_weather()
     if weather:
         url = weather["fxLink"]
         del weather["fxLink"]
-        template_msg_data = dispose_template_msg(
-            touser, TEMPLATE_IDS["weather_today"], weather, url
-        )
-        await push_message(template_msg_data)
+        for touser in touser_list:
+            template_msg_data = dispose_template_msg(
+                touser, TEMPLATE_IDS["weather_today"], weather, url
+            )
+            await push_message(template_msg_data)
 
 
 async def create_menu():
