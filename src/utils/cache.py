@@ -19,7 +19,9 @@ class Cache:
     def get(cls, key):
         if cls._data.get(key) == None:
             return None
-        if time.time() - cls._data[f"{key}_time"] > cls._data[f"{key}_max_time"]:
+        if cls._data[f"{key}_max_time"] == 0:
+            return cls._data[key]
+        elif time.time() - cls._data[f"{key}_time"] > cls._data[f"{key}_max_time"]:
             del cls._data[key]
             del cls._data[f"{key}_time"]
             del cls._data[f"{key}_max_time"]

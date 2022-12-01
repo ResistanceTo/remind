@@ -15,9 +15,9 @@ from settings import (
     DB_USER,
     DB_PASSWORD,
     LOCATION_WHITELIST,
+    USERS_LOCATION
 )
 from src.utils.wechat import wechat
-from src import DB
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 sched = AsyncIOScheduler()
@@ -36,11 +36,8 @@ async def initialization():
 
     users = await DB.select("SELECT userid, location from usermodel where white = 1")
     for user in users:
-        if location_obj := LOCATION_WHITELIST.get(user["location"]):
-            location_obj.append(user["userid"])
-        else:
-            LOCATION_WHITELIST[user["location"]] = [user["userid"]]
         WHITELIST.add(user["userid"])
+        USERS_LOCATION[user["userid"]] = user["location"]
     logging.info("初始化完毕")
 
 

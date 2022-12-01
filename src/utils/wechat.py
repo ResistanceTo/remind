@@ -3,12 +3,14 @@ from copy import deepcopy
 from .cache import cache
 from settings import (
     logging,
+    WHITELIST,
     URL_ACCESS_TOKEN,
     URL_WECHAT_MESSAGE,
     MAIN_TEMPLATE,
     TEMPLATE_IDS,
     REQUEST_RETRY_COUNT,
     HEFENG_DEFAULT_LOCATION,
+    USERS_LOCATION,
 )
 from .main import request
 from .hefeng import get_today_weather
@@ -56,13 +58,24 @@ class Wechat:
         Args:
             touser_list (list): 接收人id列表
         """
-        weather = await get_today_weather(location)
-        if weather:
-            url = weather["fxLink"]
-            del weather["fxLink"]
-            for touser in touser_list:
+        for touser in touser_list:
+            if touser in WHITELIST:
+                if cache.get("weather_today"):
+                    weather = cache.get("weather_today")
+                else:
+                    weather = await get_today_weather(
+                        USERS_LOCATION.get(touser, location)
+                    )
+                    cache.set("weather_today", weather, 60 * 60 * 8)
+                if weather:
+                    url = weather["fxLink"]
+                    template_msg_data = cls.dispose_template_msg(
+                        touser, TEMPLATE_IDS["weather_today"], weather, url
+                    )
+                    await cls.push_message(template_msg_data)
+            else:
                 template_msg_data = cls.dispose_template_msg(
-                    touser, TEMPLATE_IDS["weather_today"], weather, url
+                    touser, TEMPLATE_IDS["errors"], {"message": "未搜索到您的信息"}, ""
                 )
                 await cls.push_message(template_msg_data)
 

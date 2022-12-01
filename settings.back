@@ -41,7 +41,8 @@ URL_WECHAT_MESSAGE = (
 # 白名单
 WHITELIST = set()
 
-LOCATION_WHITELIST = {}
+# 用户对应的地点
+USERS_LOCATION = {}
 
 # template
 # 模板
