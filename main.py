@@ -1,18 +1,61 @@
 import asyncio
 import tornado.web
 from urls import urls
-from settings import logging, LISTEN_PORT, LISTEN_HOST, SCHED_MINUTE, SCHED_HOUR, WHITELIST
-from src.utils.wechat import weather_today
+from aiotorndb import Connection
+from settings import (
+    logging,
+    LISTEN_PORT,
+    LISTEN_HOST,
+    SCHED_MINUTE,
+    SCHED_HOUR,
+    WHITELIST,
+    DB_HOST,
+    DB_PORT,
+    DB_DATABASE,
+    DB_USER,
+    DB_PASSWORD,
+    LOCATION_WHITELIST,
+)
+from src.utils.wechat import wechat
+from src import DB
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 sched = AsyncIOScheduler()
 
 
+async def initialization():
+    DB = Connection(
+        host=DB_HOST,
+        db=DB_DATABASE,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        port=DB_PORT,
+        time_zone="+8:00",
+        charset="utf8",
+    )
+
+    users = await DB.select("SELECT userid, location from usermodel where white = 1")
+    for user in users:
+        if location_obj := LOCATION_WHITELIST.get(user["location"]):
+            location_obj.append(user["userid"])
+        else:
+            LOCATION_WHITELIST[user["location"]] = [user["userid"]]
+        WHITELIST.add(user["userid"])
+    logging.info("初始化完毕")
+
+
 async def main():
+    await initialization()
     app = tornado.web.Application(urls, default_host=LISTEN_HOST)
     app.listen(LISTEN_PORT)
     logging.info("项目已启动: http://{}:{}/".format(LISTEN_HOST, LISTEN_PORT))
-    sched.add_job(weather_today, "cron", args=[WHITELIST], minute=SCHED_MINUTE, hour=SCHED_HOUR)
+    sched.add_job(
+        wechat.weather_today,
+        "cron",
+        args=[WHITELIST],
+        minute=SCHED_MINUTE,
+        hour=SCHED_HOUR,
+    )
     sched.start()
     await asyncio.Event().wait()
 

@@ -39,7 +39,9 @@ URL_WECHAT_MESSAGE = (
     "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={}"
 )
 # 白名单
-WHITELIST = []
+WHITELIST = set()
+
+LOCATION_WHITELIST = {}
 
 # template
 # 模板

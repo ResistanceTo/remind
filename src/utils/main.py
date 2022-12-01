@@ -11,8 +11,6 @@ from settings import (
 from tornado.simple_httpclient import HTTPTimeoutError
 from tornado import httpclient
 
-client = httpclient.AsyncHTTPClient()
-
 
 class ResponseData:
     def __init__(self) -> None:
@@ -54,9 +52,12 @@ class WechatMiddleHandler(MiddleHandler):
     def prepare(self):
         super().prepare()
         body = self.request.body.decode("utf-8")
-        if FromUserName := re.search(r"<FromUserName><!\[CDATA\[(.*?)\]\]></FromUserName>", body):
+        if FromUserName := re.search(
+            r"<FromUserName><!\[CDATA\[(.*?)\]\]></FromUserName>", body
+        ):
             if fromUserName := FromUserName.groups()[0]:
                 self.wechat["FromUserName"] = fromUserName
+                logging.debug(f"用户id为: {fromUserName}")
             else:
                 raise ValueError("没有用户id")
         if Event := re.search(r"<Event><\!\[CDATA\[(.*?)\]]\></Event>", body):
@@ -71,7 +72,14 @@ class WechatMiddleHandler(MiddleHandler):
 
 
 async def request(
-    url, method="GET", params=None, headers=None, data=None, timeout=REQUEST_TIMEOUT, format="json"
+    url,
+    method="GET",
+    *,
+    params={},
+    headers={},
+    data=None,
+    timeout=REQUEST_TIMEOUT,
+    format="json",
 ):
     """公共异步请求方法
 
@@ -94,6 +102,7 @@ async def request(
     httpRequest = httpclient.HTTPRequest(
         url=url, method=method, headers=headers, body=data, request_timeout=timeout
     )
+    client = httpclient.AsyncHTTPClient()
     for _ in range(REQUEST_RETRY_COUNT):
         try:
             response = await client.fetch(httpRequest)

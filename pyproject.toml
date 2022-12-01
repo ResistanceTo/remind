@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.8"
 tornado = "^6.2"
 apscheduler = "^3.9.1.post1"
+aiotorndb = "^0.2"
+aiomysql = "^0.1.1"
 
 
 [[tool.poetry.source]]
