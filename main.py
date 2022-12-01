@@ -14,7 +14,6 @@ from settings import (
     DB_DATABASE,
     DB_USER,
     DB_PASSWORD,
-    LOCATION_WHITELIST,
     USERS_LOCATION
 )
 from src.utils.wechat import wechat
